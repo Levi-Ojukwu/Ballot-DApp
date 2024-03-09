@@ -1,4 +1,5 @@
 import React from "react";
+import { Flex, Text } from "@radix-ui/themes";
 import {
   useWeb3ModalAccount,
   useWeb3ModalProvider,
@@ -6,9 +7,10 @@ import {
 import { isSupportedChain } from "../utils";
 import { getProvider } from "../constants/providers";
 import { getProposalsContract } from "../constants/contracts";
-import App from "../App";
+import Proposal from "./Proposal";
+// import Proposal from "./component/Proposal";
 
-const HandleVote = () => {
+ export const HandleVote = ({loading, proposals}) => {
   const { chainId } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
 
@@ -42,11 +44,31 @@ const HandleVote = () => {
         errorText = "An unknown error occured";
       }
 
-      console.error("error: ", errorText);
+      toast.error(errorText);
     }
   };
 
-  return <App onHandleVote={handleVote} />;
+  return(
+    <main className="mt-6">
+      <Flex wrap={"wrap"} gap={"6"}>
+                    {loading ? (
+                        <Text>Loading...</Text>
+                    ) : proposals.length !== 0 ? (
+                        proposals.map((item, index) => (
+                            <Proposal
+                                key={index}
+                                name={item.name}
+                                handleVote={handleVote}
+                                id={index}
+                                voteCount={Number(item.voteCount)}
+                            />
+                        ))
+                    ) : (
+                        <Text>Could not get proposals!!</Text>
+                    )}
+                </Flex>
+    </main>
+  )
 };
 
 export default HandleVote;
